@@ -317,7 +317,7 @@ export default function DetectionLab({ onFileUpload, isLoading, result, error }:
                   Ready for Analysis
                 </h3>
                 <p className="text-gray-500 text-center px-4">
-                  Upload your space telescope data to begin exoplanet detection
+                  Upload your space telescope data to begin NovaSight detection
                 </p>
               </motion.div>
             )}

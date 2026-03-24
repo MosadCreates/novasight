@@ -31,7 +31,7 @@ import logging
 sys.path.insert(0, str(Path(__file__).parent))
 
 try:
-    import mlflow
+    import mlflow  # type: ignore
     MLFLOW_AVAILABLE = True
 except ImportError:
     print("ERROR: MLflow not available. Install with: pip install mlflow")
@@ -48,7 +48,7 @@ logger = logging.getLogger(__name__)
 def run_experiment(
     dataset_path: str,
     model_type: str,
-    experiment_name: str = 'exoplanet-detection',
+    experiment_name: str = 'novasight-ml',
     test_size: float = 0.2,
     random_state: int = 42
 ):
@@ -95,7 +95,7 @@ def run_experiment(
 def run_multiple_experiments(
     dataset_path: str,
     models: list,
-    experiment_name: str = 'exoplanet-detection',
+    experiment_name: str = 'novasight-ml',
     test_size: float = 0.2,
     random_state: int = 42
 ):
@@ -205,8 +205,8 @@ Examples:
     parser.add_argument(
         '--experiment-name',
         type=str,
-        default='exoplanet-detection',
-        help='MLflow experiment name (default: exoplanet-detection)'
+        default='novasight-ml',
+        help='MLflow experiment name (default: novasight-ml)'
     )
     
     parser.add_argument(

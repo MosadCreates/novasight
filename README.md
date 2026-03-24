@@ -1,4 +1,4 @@
-# Exoplanet Detection Platform
+# NovaSight: Exoplanet Detection Platform
 
 A full-stack application that downloads NASA light-curve data (Kepler / K2 / TESS), trains machine-learning models to detect exoplanets, serves predictions through a FastAPI backend, and offers a React/Next.js frontend for interactive uploads and results.
 
@@ -160,8 +160,8 @@ The API will be available at `http://localhost:8000`
 **Docker:**
 ```bash
 cd backend
-docker build -t exoplanet-api .
-docker run -p 8000:8000 exoplanet-api
+docker build -t novasight-api .
+docker run -p 8000:8000 novasight-api
 ```
 
 ### ML Pipeline
@@ -313,4 +313,10 @@ MIT
 ## Contributing
 
 Contributions welcome! Please open an issue or submit a pull request.
+
+---
+
+## Author
+
+Created and built by Mohamed Mosad.
 

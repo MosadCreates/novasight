@@ -256,8 +256,8 @@ Factory function that returns appropriate model loader based on framework.
 ### Docker
 
 ```bash
-docker build -t exoplanet-api .
-docker run -p 8000:8000 -v $(pwd)/../ml/models:/app/models exoplanet-api
+docker build -t novasight-api .
+docker run -p 8000:8000 -v $(pwd)/../ml/models:/app/models novasight-api
 ```
 
 ### Environment Variables

@@ -375,7 +375,7 @@ model = mlflow.pytorch.load_model(f"runs:/{run_id}/model")
 │                                                          │
 │  experiment-name          Runs  Created                 │
 │  ─────────────────────    ────  ────────                │
-│  exoplanet-detection       15   2024-10-07              │
+│  novasight-ml              15   2024-10-07              │
 │  kepler-baseline            8   2024-10-05              │
 │  model-comparison          12   2024-10-06              │
 │                                                          │

@@ -1,7 +1,8 @@
 {
-  "name": "exoplanet-detection-frontend",
+  "name": "novasight",
   "version": "0.1.0",
   "private": true,
+  "author": "Mohamed Mosad",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

@@ -48,7 +48,7 @@ export default function AboutSection() {
             <span className="gradient-text">MISSION OVERVIEW</span>
           </h2>
           <p className="text-lg sm:text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed text-center px-4">
-            Our exoplanet detection system combines cutting-edge machine learning with NASA's space telescope data 
+            Our NovaSight system combines cutting-edge machine learning with NASA's space telescope data 
             to identify distant worlds that could potentially harbor life.
           </p>
         </motion.div>
