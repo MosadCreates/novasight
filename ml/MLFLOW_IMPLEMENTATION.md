@@ -238,7 +238,7 @@ After training, MLflow UI shows:
 ┌─────────────────────────────────────────┐
 │ Experiments                              │
 ├─────────────────────────────────────────┤
-│ exoplanet-detection          5 runs     │
+│ novasight-ml                 5 runs     │
 │ production-models            3 runs     │
 │ hyperparameter-tuning       12 runs     │
 └─────────────────────────────────────────┘

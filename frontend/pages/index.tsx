@@ -56,7 +56,7 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Exoplanet Detection System | NASA Space Apps</title>
+        <title>NovaSight | NASA Space Apps</title>
         <meta name="description" content="Advanced machine learning system for detecting exoplanets using NASA space telescope data" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
@@ -338,7 +338,7 @@ export default function HomePage() {
               </motion.div>
               <div className="text-center sm:text-left">
                 <h3 className="text-lg lg:text-xl font-semibold gradient-text">NASA Space Apps Challenge 2024</h3>
-                <p className="text-gray-400 text-sm lg:text-base">Exoplanet Detection System</p>
+                <p className="text-gray-400 text-sm lg:text-base">NovaSight System</p>
               </div>
             </div>
             

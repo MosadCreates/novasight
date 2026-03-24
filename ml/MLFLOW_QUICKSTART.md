@@ -76,7 +76,7 @@ mlflow ui --backend-store-uri ./mlruns
 mlflow experiments list --tracking-uri ./mlruns
 
 # Search runs
-mlflow runs list --experiment-name exoplanet-detection
+mlflow runs list --experiment-name novasight-ml
 ```
 
 ## Directory Structure After Training

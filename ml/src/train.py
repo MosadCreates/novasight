@@ -6,8 +6,8 @@ Usage:
     python train.py data/exoplanets.csv --model xgboost --output models/xgb_model.pkl
     python train.py data/exoplanets.csv --model nn --output models/nn_model.pt
 """
-import numpy as np
-import pandas as pd
+import numpy as np  # type: ignore
+import pandas as pd  # type: ignore
 from pathlib import Path
 import pickle
 import json
@@ -17,20 +17,20 @@ from datetime import datetime
 from typing import Dict, Tuple, Any
 
 # Scikit-learn
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import (
+from sklearn.ensemble import RandomForestClassifier  # type: ignore
+from sklearn.model_selection import train_test_split  # type: ignore
+from sklearn.metrics import (  # type: ignore
     accuracy_score, precision_score, recall_score, f1_score,
     classification_report, confusion_matrix, roc_auc_score
 )
 
 # Import our custom functions
-from data_loader import load_exoplanet_csv
-from preprocess import preprocess_features
+from data_loader import load_exoplanet_csv  # type: ignore
+from preprocess import preprocess_features  # type: ignore
 
 # Optional: XGBoost
 try:
-    import xgboost as xgb
+    import xgboost as xgb  # type: ignore
     XGBOOST_AVAILABLE = True
 except ImportError:
     XGBOOST_AVAILABLE = False
@@ -38,10 +38,10 @@ except ImportError:
 
 # Optional: PyTorch
 try:
-    import torch
-    import torch.nn as nn
-    import torch.optim as optim
-    from torch.utils.data import DataLoader, TensorDataset
+    import torch  # type: ignore
+    import torch.nn as nn  # type: ignore
+    import torch.optim as optim  # type: ignore
+    from torch.utils.data import DataLoader, TensorDataset  # type: ignore
     PYTORCH_AVAILABLE = True
 except ImportError:
     PYTORCH_AVAILABLE = False
@@ -49,10 +49,10 @@ except ImportError:
 
 # Optional: MLflow
 try:
-    import mlflow
-    import mlflow.sklearn
-    import mlflow.pytorch
-    import mlflow.xgboost
+    import mlflow  # type: ignore
+    import mlflow.sklearn  # type: ignore
+    import mlflow.pytorch  # type: ignore
+    import mlflow.xgboost  # type: ignore
     MLFLOW_AVAILABLE = True
 except ImportError:
     MLFLOW_AVAILABLE = False
@@ -103,7 +103,7 @@ class ExoplanetNN(nn.Module):
     
     def forward(self, x):
         """Forward pass"""
-        return self.network(x)
+        return self.network(x)  # type: ignore
 
 
 def train_random_forest(X_train: np.ndarray, y_train: np.ndarray, 
@@ -296,7 +296,7 @@ def train_neural_network(X_train: np.ndarray, y_train: np.ndarray,
         epoch_loss = 0.0
         for batch_X, batch_y in train_loader:
             # Forward pass
-            outputs = model(batch_X)
+            outputs = model(batch_X)  # type: ignore
             loss = criterion(outputs, batch_y)
             
             # Backward pass
@@ -318,7 +318,7 @@ def train_neural_network(X_train: np.ndarray, y_train: np.ndarray,
     # Evaluation
     model.eval()
     with torch.no_grad():
-        outputs = model(X_test_tensor)
+        outputs = model(X_test_tensor)  # type: ignore
         probabilities = torch.softmax(outputs, dim=1)
         y_pred_proba = probabilities[:, 1].numpy()
         y_pred = outputs.argmax(dim=1).numpy()
@@ -513,8 +513,8 @@ Examples:
     parser.add_argument(
         '--experiment-name',
         type=str,
-        default='exoplanet-detection',
-        help='MLflow experiment name (default: exoplanet-detection)'
+        default='novasight-ml',
+        help='MLflow experiment name (default: novasight-ml)'
     )
     
     args = parser.parse_args()
