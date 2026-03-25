@@ -16,7 +16,7 @@ torch>=2.1.0
 # tensorflow>=2.15.0
 
 # Optional: for model interpretability (recommended)
-# shap>=0.43.0  # For SHAP-based explanations
+shap>=0.43.0  # For SHAP-based explanations
 
 # Optional: for experiment tracking (recommended)
 mlflow>=2.9.2  # For MLflow tracking
