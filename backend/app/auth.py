@@ -7,9 +7,10 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.auth_models import TokenData, User, UserInDB
 import uuid
 
-
 # Security configuration
-SECRET_KEY = "your-secret-key-change-in-production-use-env-variable"  # TODO: Move to environment variable
+SECRET_KEY = (
+    "your-secret-key-change-in-production-use-env-variable"  # TODO: Move to environment variable
+)
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 days
 
@@ -54,31 +55,30 @@ def create_user(email: str, password: str, full_name: Optional[str] = None) -> U
     """Create a new user"""
     if email in users_db:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered"
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered"
         )
-    
+
     user_id = str(uuid.uuid4())
     hashed_password = get_password_hash(password)
-    
+
     user_in_db = UserInDB(
         id=user_id,
         email=email,
         full_name=full_name,
         hashed_password=hashed_password,
         created_at=datetime.utcnow(),
-        is_active=True
+        is_active=True,
     )
-    
+
     users_db[email] = user_in_db
-    
+
     # Return user without hashed password
     return User(
         id=user_in_db.id,
         email=user_in_db.email,
         full_name=user_in_db.full_name,
         created_at=user_in_db.created_at,
-        is_active=user_in_db.is_active
+        is_active=user_in_db.is_active,
     )
 
 
@@ -89,13 +89,13 @@ def authenticate_user(email: str, password: str) -> Optional[User]:
         return None
     if not verify_password(password, user.hashed_password):
         return None
-    
+
     return User(
         id=user.id,
         email=user.email,
         full_name=user.full_name,
         created_at=user.created_at,
-        is_active=user.is_active
+        is_active=user.is_active,
     )
 
 
@@ -106,7 +106,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     try:
         token = credentials.credentials
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -117,17 +117,17 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         token_data = TokenData(email=email, user_id=user_id)
     except JWTError:
         raise credentials_exception
-    
+
     user = get_user(email=token_data.email)
     if user is None:
         raise credentials_exception
-    
+
     return User(
         id=user.id,
         email=user.email,
         full_name=user.full_name,
         created_at=user.created_at,
-        is_active=user.is_active
+        is_active=user.is_active,
     )
 
 
@@ -136,4 +136,3 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
-
