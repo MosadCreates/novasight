@@ -163,8 +163,12 @@ def _explain_with_shap(
     shap_values = explainer.shap_values(X_sample)
 
     # Handle different SHAP value formats
-    if isinstance(shap_values, list):
-        # For binary classification, take the positive class
+    # Old SHAP: list of arrays per class; New SHAP: 3D ndarray (samples, features, classes)
+    if isinstance(shap_values, np.ndarray) and shap_values.ndim == 3:
+        # New SHAP API: shape is (n_samples, n_features, n_classes) — take positive class
+        shap_values = shap_values[:, :, 1] if shap_values.shape[2] > 1 else shap_values[:, :, 0]
+    elif isinstance(shap_values, list):
+        # Old SHAP API: list of arrays, one per class
         shap_values = shap_values[1] if len(shap_values) > 1 else shap_values[0]
 
     # If multiple samples, average SHAP values

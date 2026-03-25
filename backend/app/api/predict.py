@@ -169,6 +169,8 @@ async def predict_exoplanet(request: PredictionRequest):
 
         return PredictionResponse(**result)
 
+    except HTTPException:
+        raise
     except ValueError as e:
         logger.error(f"Validation error: {str(e)}")
         raise HTTPException(
