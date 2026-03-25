@@ -8,7 +8,7 @@ max-line-length = 100
 max-complexity = 10
 
 # Ignore specific errors
-ignore = E203,E501,W503,E722  # See docs for meaning
+ignore = E203,E501,W503,E722
 
 # Exclude directories
 exclude =
