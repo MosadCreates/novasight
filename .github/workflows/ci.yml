@@ -43,7 +43,7 @@ jobs:
     - name: Run backend tests with pytest
       run: |
         cd backend
-        pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
+        python -m pytest tests/ -v --cov=app --cov-report=xml --cov-report=term-missing
     
     - name: Upload backend coverage to Codecov
       uses: codecov/codecov-action@v4
@@ -86,7 +86,7 @@ jobs:
     - name: Run ML tests with pytest
       run: |
         cd ml
-        pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
+        python -m pytest tests/ -v --cov=src --cov-report=xml --cov-report=term-missing
     
     - name: Upload ML coverage to Codecov
       uses: codecov/codecov-action@v4
