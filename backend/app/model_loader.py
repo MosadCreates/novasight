@@ -84,18 +84,31 @@ class BaseModelLoader(ABC):
             except Exception:
                 pass
 
-    def map_prediction_to_class(self, prediction: int, confidence: float) -> PredictionClass:
+    def map_prediction_to_class(self, prediction, confidence: float) -> PredictionClass:
         """
-        Map numeric prediction to PredictionClass
+        Map model prediction to PredictionClass.
+
+        The sklearn model was trained on string labels (CONFIRMED, CANDIDATE,
+        FALSE POSITIVE), so ``prediction`` may be a string or an integer.
 
         Args:
-            prediction: Numeric prediction (0, 1, 2)
+            prediction: Model prediction — either a string label or numeric (0/1/2)
             confidence: Confidence score
 
         Returns:
             PredictionClass enum value
         """
-        # Default mapping - can be customized based on model
+        # Handle string labels produced by sklearn when trained on string targets
+        if isinstance(prediction, str):
+            label = prediction.upper().strip()
+            if "FALSE" in label or "FP" in label:
+                return PredictionClass.FALSE_POSITIVE
+            elif "CANDIDATE" in label:
+                return PredictionClass.CANDIDATE if confidence < 0.8 else PredictionClass.CONFIRMED
+            else:  # CONFIRMED or anything else
+                return PredictionClass.CONFIRMED
+
+        # Numeric label fallback (0 = false positive, 1 = candidate/confirmed, 2 = confirmed)
         if prediction == 0:
             return PredictionClass.FALSE_POSITIVE
         elif prediction == 1:
@@ -113,12 +126,21 @@ class BaseModelLoader(ABC):
         Returns:
             Numpy array of features in correct order
         """
-        # Map aliases to normalized feature names (matching those created by load_exoplanet_csv)
+        # Map aliases to normalized feature names (matching those created by load_exoplanet_csv).
+        # Covers both human-friendly names and raw koi_* column names from the Kepler dataset.
         aliases_map = {
-            "koi_period": "orbital_period", "period": "orbital_period", "pl_orbper": "orbital_period", "period_days": "orbital_period",
-            "koi_duration": "transit_duration", "duration": "transit_duration", "pl_trandur": "transit_duration", "transit_dur": "transit_duration",
-            "koi_prad": "planet_radius", "radius": "planet_radius", "pl_radj": "planet_radius", "pl_rade": "planet_radius", "prad": "planet_radius",
-            "koi_steff": "stellar_temp", "temperature": "stellar_temp", "st_teff": "stellar_temp", "teff": "stellar_temp", "star_temp": "stellar_temp"
+            # Orbital period
+            "koi_period": "orbital_period", "period": "orbital_period",
+            "pl_orbper": "orbital_period", "period_days": "orbital_period",
+            # Transit duration
+            "koi_duration": "transit_duration", "duration": "transit_duration",
+            "pl_trandur": "transit_duration", "transit_dur": "transit_duration",
+            # Planet radius
+            "koi_prad": "planet_radius", "radius": "planet_radius",
+            "pl_radj": "planet_radius", "pl_rade": "planet_radius", "prad": "planet_radius",
+            # Stellar temperature
+            "koi_steff": "stellar_temp", "temperature": "stellar_temp",
+            "st_teff": "stellar_temp", "teff": "stellar_temp", "star_temp": "stellar_temp",
         }
         normalized_features = {}
         for k, v in feature_dict.items():

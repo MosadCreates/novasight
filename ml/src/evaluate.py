@@ -18,7 +18,6 @@ from sklearn.metrics import (
     confusion_matrix,
     classification_report,
     roc_auc_score,
-    roc_curve,
 )
 
 import matplotlib.pyplot as plt
@@ -124,11 +123,20 @@ def main():
     
     # Run preprocess_features to align missing values, categorical encoding, and apply loaded scaler
     X_scaled, y = preprocess_features(
-        df, 
-        label_column=args.label_column, 
-        extract_flux_features=False, # match training settings
+        df,
+        label_column=args.label_column,
+        extract_flux_features=False,  # match training settings
         scaler=scaler,
     )
+
+    # Guard: verify feature count matches what the scaler expects
+    expected_features = scaler.n_features_in_ if hasattr(scaler, "n_features_in_") else None
+    if expected_features is not None and X_scaled.shape[1] != expected_features:
+        raise ValueError(
+            f"Feature count mismatch: evaluation data produced {X_scaled.shape[1]} features, "
+            f"but the scaler was fitted on {expected_features} features. "
+            "Re-train the model to regenerate a matching scaler."
+        )
 
     # Split using the same test size and random state to isolate the test set
     X_train, X_test, y_train, y_test = train_test_split(
@@ -142,9 +150,9 @@ def main():
 
     # Calculate metrics
     accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred, zero_division=0)
+    recall = recall_score(y_test, y_pred, zero_division=0)
+    f1 = f1_score(y_test, y_pred, zero_division=0)
     
     metrics = {
         "accuracy": accuracy,
@@ -166,6 +174,7 @@ def main():
     if "roc_auc" in metrics:
         logger.info(f"ROC AUC:   {metrics['roc_auc']:.4f}")
     logger.info("=" * 60)
+    logger.info("Classification Report:\n" + classification_report(y_test, y_pred, zero_division=0))
 
     # Save metrics JSON
     metrics_file = output_path / "evaluation_metrics.json"

@@ -65,7 +65,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
         <>
           {/* Backdrop */}
           <motion.div
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-xs z-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -80,63 +80,62 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="glass-strong rounded-2xl p-8 w-full max-w-md border border-cyan-500/30 shadow-2xl"
-              initial={{ scale: 0.9, y: 20 }}
+              className="bg-white border border-[#E5E7EB] rounded-xl p-8 w-full max-w-md shadow-2xl relative"
+              initial={{ scale: 0.96, y: 10 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
+              exit={{ scale: 0.96, y: 10 }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
 
               {/* Title */}
-              <div className="text-center mb-8">
+              <div className="text-center mb-6">
                 <motion.h2
-                  className="text-3xl font-bold gradient-text mb-2"
-                  style={{ fontFamily: 'Orbitron, monospace' }}
+                  className="text-2xl font-bold text-gray-900 mb-1.5"
                   key={mode}
-                  initial={{ opacity: 0, y: -10 }}
+                  initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  {mode === 'login' ? 'Welcome Back' : 'Join Us'}
+                  {mode === 'login' ? 'Account Authentication' : 'Create Platform Account'}
                 </motion.h2>
-                <p className="text-gray-400">
+                <p className="text-sm text-gray-500">
                   {mode === 'login' 
-                    ? 'Sign in to continue your exoplanet search' 
-                    : 'Start your journey to discover new worlds'}
+                    ? 'Sign in to access your detection history' 
+                    : 'Start your exoplanet detection queries'}
                 </p>
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 {mode === 'signup' && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                   >
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Full Name (Optional)
+                    <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                      Full Name
                     </label>
                     <input
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all text-white"
+                      className="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg focus:border-[#1A56DB] focus:outline-none focus:ring-2 focus:ring-[#1A56DB]/15 transition-all text-sm text-gray-950 placeholder-gray-400"
                       placeholder="John Doe"
                     />
                   </motion.div>
                 )}
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                     Email Address
                   </label>
                   <input
@@ -144,13 +143,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all text-white"
-                    placeholder="astronaut@nasa.gov"
+                    className="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg focus:border-[#1A56DB] focus:outline-none focus:ring-2 focus:ring-[#1A56DB]/15 transition-all text-sm text-gray-950 placeholder-gray-400"
+                    placeholder="name@organization.edu"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                     Password
                   </label>
                   <input
@@ -158,11 +157,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-cyan-500/20 transition-all text-white"
+                    className="w-full px-3 py-2 bg-white border border-[#E5E7EB] rounded-lg focus:border-[#1A56DB] focus:outline-none focus:ring-2 focus:ring-[#1A56DB]/15 transition-all text-sm text-gray-950 placeholder-gray-400"
                     placeholder="••••••••"
                   />
                   {mode === 'signup' && (
-                    <p className="mt-2 text-xs text-gray-500">
+                    <p className="mt-1.5 text-[10px] text-gray-500 leading-tight">
                       Must be at least 8 characters with uppercase, lowercase, and number
                     </p>
                   )}
@@ -172,10 +171,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 <AnimatePresence>
                   {localError && (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm"
+                      exit={{ opacity: 0, y: -5 }}
+                      className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs"
                     >
                       {localError}
                     </motion.div>
@@ -186,25 +185,25 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login' }: Au
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-semibold text-white glass glow-blue disabled:opacity-50 disabled:cursor-not-allowed"
-                  whileHover={!isSubmitting ? { scale: 1.02 } : {}}
-                  whileTap={!isSubmitting ? { scale: 0.98 } : {}}
+                  className="w-full py-2.5 bg-[#1A56DB] hover:bg-[#2563EB] rounded-lg font-semibold text-white text-sm shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  whileHover={!isSubmitting ? { scale: 1.01 } : {}}
+                  whileTap={!isSubmitting ? { scale: 0.99 } : {}}
                 >
                   {isSubmitting 
-                    ? (mode === 'login' ? 'Signing In...' : 'Creating Account...') 
-                    : (mode === 'login' ? 'Sign In' : 'Create Account')}
+                    ? (mode === 'login' ? 'Authenticating...' : 'Registering Account...') 
+                    : (mode === 'login' ? 'Sign In' : 'Register Account')}
                 </motion.button>
               </form>
 
               {/* Switch Mode */}
-              <div className="mt-6 text-center">
-                <p className="text-gray-400 text-sm">
-                  {mode === 'login' ? "Don't have an account? " : "Already have an account? "}
+              <div className="mt-5 text-center">
+                <p className="text-gray-500 text-xs">
+                  {mode === 'login' ? "New user? " : "Already registered? "}
                   <button
                     onClick={switchMode}
-                    className="text-cyan-400 hover:text-cyan-300 font-semibold transition-colors"
+                    className="text-[#1A56DB] hover:text-[#2563EB] font-bold transition-colors"
                   >
-                    {mode === 'login' ? 'Sign Up' : 'Sign In'}
+                    {mode === 'login' ? 'Create an account' : 'Sign in to account'}
                   </button>
                 </p>
               </div>

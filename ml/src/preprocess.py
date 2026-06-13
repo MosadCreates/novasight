@@ -106,8 +106,8 @@ def preprocess_features(
     label_encoders = {}
 
     for col in X_numeric.columns:
-        if pd.api.types.is_object_dtype(X_numeric[col]) or pd.api.types.is_categorical_dtype(
-            X_numeric[col]
+        if pd.api.types.is_object_dtype(X_numeric[col]) or isinstance(
+            X_numeric[col].dtype, pd.CategoricalDtype
         ):
             categorical_cols.append(col)
             le = LabelEncoder()

@@ -1,184 +1,68 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
 
 export default function HeroSection() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({
-        x: (e.clientX / window.innerWidth) * 100,
-        y: (e.clientY / window.innerHeight) * 100,
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Animated Gradient Orbs */}
-      <motion.div
-        className="absolute w-96 h-96 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl"
-        animate={{
-          x: mousePosition.x * 0.1,
-          y: mousePosition.y * 0.1,
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          x: { duration: 0.8, ease: "easeOut" },
-          y: { duration: 0.8, ease: "easeOut" },
-          scale: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-        }}
-        style={{
-          top: '20%',
-          left: '20%',
-        }}
-      />
-      
-      <motion.div
-        className="absolute w-80 h-80 rounded-full bg-gradient-to-r from-green-500/15 to-cyan-500/15 blur-3xl"
-        animate={{
-          x: mousePosition.x * -0.05,
-          y: mousePosition.y * -0.05,
-          scale: [1, 0.8, 1],
-        }}
-        transition={{
-          x: { duration: 1.2, ease: "easeOut" },
-          y: { duration: 1.2, ease: "easeOut" },
-          scale: { duration: 6, repeat: Infinity, ease: "easeInOut" }
-        }}
-        style={{
-          bottom: '20%',
-          right: '20%',
-        }}
-      />
-
-      {/* Main Content - Properly Centered */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center z-10 max-w-7xl">
-        <div className="flex flex-col items-center justify-center min-h-screen py-20">
+    <section className="relative py-20 lg:py-32 flex items-center justify-center overflow-hidden border-b border-[#E5E7EB] bg-white">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center max-w-5xl">
+        <div className="flex flex-col items-center justify-center">
           
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="mb-12 w-full"
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="mb-6 w-full"
           >
-            <motion.h1 
-              className="text-5xl sm:text-7xl lg:text-9xl font-black mb-6 leading-tight text-center"
-              style={{ fontFamily: 'Orbitron, monospace' }}
-              animate={{ 
-                textShadow: [
-                  '0 0 20px #00D4FF',
-                  '0 0 40px #8B5CF6',
-                  '0 0 20px #10B981',
-                  '0 0 20px #00D4FF'
-                ]
-              }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            <h1 
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#111827] mb-4"
             >
-              <span className="gradient-text block">EXOPLANET</span>
-            </motion.h1>
+              NovaSight — Exoplanet Classification Platform
+            </h1>
             
             <motion.h2 
-              className="text-2xl sm:text-3xl lg:text-5xl font-light mb-8 text-gray-300 text-center"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              className="text-lg sm:text-xl font-medium text-[#6B7280]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              DETECTION SYSTEM
+              Advanced Machine Learning for Transit Data Analysis
             </motion.h2>
           </motion.div>
 
           <motion.p 
-            className="text-lg sm:text-xl lg:text-2xl text-gray-400 max-w-4xl mx-auto mb-12 leading-relaxed text-center px-4"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-base sm:text-lg text-gray-500 max-w-3xl mx-auto mb-10 leading-relaxed px-4"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
           >
-            Discover distant worlds beyond our solar system using advanced machine learning 
-            and NASA's space telescope data. Join the search for potentially habitable exoplanets.
+            Identify and analyze candidate signals in Kepler, K2, and TESS datasets using pre-trained neural network architectures. Receive instant classifications, confidence ratings, and model feature importances.
           </motion.p>
 
           <motion.div 
-            className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center w-full max-w-md sm:max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center w-full max-w-md mx-auto"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
           >
             <motion.button
-              className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-lg font-semibold glass glow-blue btn-space"
-              whileHover={{ 
-                scale: 1.05,
-                boxShadow: '0 0 30px rgba(0, 212, 255, 0.5)'
-              }}
-              whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto px-6 py-3 bg-[#1A56DB] hover:bg-[#2563EB] text-white font-semibold rounded-lg shadow-sm text-sm transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => document.getElementById('detection-lab')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              🚀 Start Detection
+              Open Detection Lab
             </motion.button>
             
             <motion.button
-              className="w-full sm:w-auto px-8 py-4 border border-cyan-500/50 rounded-full text-lg font-semibold glass glow-blue btn-space hover:bg-cyan-500/10"
-              whileHover={{ 
-                scale: 1.05,
-                borderColor: '#00D4FF'
-              }}
-              whileTap={{ scale: 0.95 }}
+              className="w-full sm:w-auto px-6 py-3 border border-[#E5E7EB] hover:bg-gray-50 text-gray-700 font-semibold rounded-lg shadow-sm text-sm transition-colors"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              📊 Learn More
+              View Documentation
             </motion.button>
           </motion.div>
         </div>
       </div>
-
-      {/* Floating Elements */}
-      <motion.div 
-        className="absolute top-1/4 left-10 w-4 h-4 bg-cyan-400 rounded-full opacity-60 hidden lg:block"
-        animate={{
-          y: [0, -20, 0],
-          scale: [1, 1.2, 1],
-          opacity: [0.6, 1, 0.6],
-        }}
-        transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      
-      <motion.div 
-        className="absolute bottom-1/3 right-16 w-6 h-6 bg-purple-400 rounded-full opacity-40 hidden lg:block"
-        animate={{
-          y: [0, 15, 0],
-          x: [0, 10, 0],
-          scale: [1, 0.8, 1],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-          delay: 1
-        }}
-      />
-
-      {/* Scroll Indicator - Properly Centered */}
-      <motion.div 
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-        animate={{ y: [0, 10, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      >
-        <div className="w-6 h-10 border-2 border-cyan-400 rounded-full flex justify-center items-start">
-          <motion.div 
-            className="w-1 h-3 bg-cyan-400 rounded-full mt-2"
-            animate={{ y: [0, 16, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-        <p className="text-cyan-400 text-sm mt-2 font-medium text-center">Scroll to explore</p>
-      </motion.div>
     </section>
   );
 }
