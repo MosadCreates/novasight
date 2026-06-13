@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import HeroSection from '../components/HeroSection';
 import DetectionLab from '../components/DetectionLab';
 import AboutSection from '../components/AboutSection';
-import AuthModal from '../components/AuthModal';
 
 interface FeatureImportance {
   name: string;
@@ -29,8 +28,6 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<BatchResult | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'signup'>('login');
 
   const handleFileUpload = async (file: File) => {
     setIsLoading(true);
@@ -231,12 +228,6 @@ export default function HomePage() {
           </div>
         </motion.footer>
         
-        {/* Auth Modal */}
-        <AuthModal 
-          isOpen={authModalOpen}
-          onClose={() => setAuthModalOpen(false)}
-          initialMode={authModalMode}
-        />
       </div>
     </>
   );
