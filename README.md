@@ -4,27 +4,27 @@ NovaSight is a full-stack, end-to-end exoplanet detection platform that uses mac
 
 ---
 
-## 🌌 Project Overview
+## Project Overview
 
 The search for exoplanets (planets outside our Solar System) typically relies on the **transit method**, where astronomers measure the dip in light as a planet passes in front of its host star. NovaSight processes these observations (light curve transit depths, duration, orbital periods, stellar characteristics) to classify candidates as either **Confirmed Exoplanets** or **False Positives**.
 
-### 🌟 Key Features
-- **NASA Data Fetcher**: Automates downloads of official Kepler, K2, and TESS datasets directly from the NASA Exoplanet Archive.
-- **High-Performance ML Classifier**: An optimized Random Forest model achieving **98.5% accuracy** on Kepler Objects of Interest (KOI).
-- **Real-Time Prediction API**: Serving fast, scaled inferences via a REST API.
-- **Explainable AI**: Provides feature importance rankings (using Gini importances / Tree SHAP fallbacks) to explain exactly why a candidate was classified as an exoplanet.
-- **Interactive Lab Dashboard**: A premium user interface featuring drag-and-drop CSV batch upload, real-time predictions, visual feedback, and user authentication.
-- **Docker Orchestrated**: Simple, single-command container deployment for the entire stack.
+### Key Features
+- Automates downloads of official Kepler, K2, and TESS datasets directly from the NASA Exoplanet Archive.
+- An optimized Random Forest model achieving **98.5% accuracy** on Kepler Objects of Interest (KOI).
+- Serving fast, scaled inferences via a REST API.
+- Provides feature importance rankings (using Gini importances / Tree SHAP fallbacks) to explain exactly why a candidate was classified as an exoplanet.
+- A premium user interface featuring drag-and-drop CSV batch upload, real-time predictions, visual feedback, and user authentication.
+- Simple, single-command container deployment for the entire stack.
 
 ![NovaSight Dashboard](docs/assets/image.png)
 
 ---
 
-## 📊 Model Performance
+## Model Performance
 
 The platform ships with a Random Forest classifier trained on the NASA Kepler cumulative object dataset. Features are automatically aligned, imputed, and scaled using `StandardScaler` to ensure robust inference.
 
-### 📈 Evaluation Metrics
+### Evaluation Metrics
 Evaluated on a stratified 20% test split:
 
 | Metric | Score |
@@ -39,7 +39,7 @@ The confusion matrix and feature importances are automatically generated and sav
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 novasight/
@@ -76,7 +76,7 @@ novasight/
 
 ---
 
-## 🚀 Quick Start (Local Development)
+## Quick Start (Local Development)
 
 ### Prerequisites
 - Python 3.10+
@@ -134,7 +134,7 @@ npm run dev
 
 ---
 
-## 🐳 Running with Docker Compose
+## Running with Docker Compose
 
 To start the entire environment (FastAPI backend, Next.js frontend, and Redis caching server) with a single command:
 
@@ -151,21 +151,21 @@ docker-compose up --build
 
 ---
 
-## 🔒 Authentication Notes
+## Authentication Notes
 The backend supports user registration and login using JWT session tokens. 
 - For demonstration simplicity in this portfolio prototype, users are stored in an **in-memory database** dictionary in `backend/app/auth.py`. 
 - **Planned Work**: Persistence utilizing SQLite or PostgreSQL is listed in the future roadmap.
 
 ---
 
-## 🗺️ Roadmap & Future Work
+## Roadmap & Future Work
 - [ ] **Database Integration**: Transition the session auth database from in-memory to PostgreSQL/SQLite.
 - [ ] **Raw Light-Curve Time-Series**: Train 1D CNNs or LSTMs to classify raw time-series flux signals rather than tabular pre-extracted Kepler attributes.
 - [ ] **Multi-Class Classification**: Extend the model to explicitly separate *Candidates* from *Confirmed* exoplanets, rather than grouping them into a binary (Positive vs False Positive) target.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to open a Pull Request or report issues. 
 
@@ -176,8 +176,8 @@ Contributions are welcome! Please feel free to open a Pull Request or report iss
 
 ---
 
-## 📜 License
+## License
 This project is licensed under the MIT License.
 
-## ✍️ Author
-Created and maintained by [Mohamed Mosad](https://github.com/MosadCreates). Built with passion for astronomy and data science.
+## Author
+Created and maintained by [Mohamed Mosad](https://github.com/MosadCreates) — ML Developer & CS student at Alamein International University.
