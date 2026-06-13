@@ -16,6 +16,8 @@ The search for exoplanets (planets outside our Solar System) typically relies on
 - **Interactive Lab Dashboard**: A premium user interface featuring drag-and-drop CSV batch upload, real-time predictions, visual feedback, and user authentication.
 - **Docker Orchestrated**: Simple, single-command container deployment for the entire stack.
 
+![NovaSight Dashboard](docs/assets/screenshot.png)
+
 ---
 
 ## 📊 Model Performance
