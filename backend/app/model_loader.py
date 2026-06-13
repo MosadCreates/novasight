@@ -299,6 +299,10 @@ class ScikitLearnModelLoader(BaseModelLoader):
         with open(self.model_path, "rb") as f:
             self.model = pickle.load(f)
 
+        # Force single-threaded inference to prevent parallel execution hangs on Windows under web servers
+        if hasattr(self.model, "n_jobs"):
+            self.model.n_jobs = 1
+
         self.load_config()
 
     def predict(self, features: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
