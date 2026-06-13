@@ -1,307 +1,181 @@
 # NovaSight: Exoplanet Detection Platform
 
-A full-stack application that downloads NASA light-curve data (Kepler / K2 / TESS), trains machine-learning models to detect exoplanets, serves predictions through a FastAPI backend, and offers a React/Next.js frontend for interactive uploads and results.
+NovaSight is a full-stack, end-to-end exoplanet detection platform that uses machine learning to identify potential exoplanets from Kepler space telescope observations. The stack combines a **FastAPI backend**, a **React/Next.js frontend**, a robust **scikit-learn machine learning pipeline**, and a **Redis cache**, all orchestrated using **Docker Compose**.
 
 ---
 
-## 🌐 Datasets
+## 🌌 Project Overview
 
-| Mission | CSV Source                                                                                              | Notes                    |
-| ------- | ------------------------------------------------------------------------------------------------------- | ------------------------ |
-| Kepler  | https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+*+from+ps&format=csv                    | Confirmed planets        |
-| K2      | https://exoplanetarchive.ipac.caltech.edu/cgi-bin/nstedAPI/nph-nstedAPI?table=k2candidates&format=csv   | Planet candidates        |
-| TESS    | https://exoplanetarchive.ipac.caltech.edu/cgi-bin/TblView/nph-tblView?app=ExoTbls&config=TOI&format=csv | TESS Objects of Interest |
+The search for exoplanets (planets outside our Solar System) typically relies on the **transit method**, where astronomers measure the dip in light as a planet passes in front of its host star. NovaSight processes these observations (light curve transit depths, duration, orbital periods, stellar characteristics) to classify candidates as either **Confirmed Exoplanets** or **False Positives**.
 
-Fetch them automatically:
+### 🌟 Key Features
+- **NASA Data Fetcher**: Automates downloads of official Kepler, K2, and TESS datasets directly from the NASA Exoplanet Archive.
+- **High-Performance ML Classifier**: An optimized Random Forest model achieving **98.5% accuracy** on Kepler Objects of Interest (KOI).
+- **Real-Time Prediction API**: Serving fast, scaled inferences via a REST API.
+- **Explainable AI**: Provides feature importance rankings (using Gini importances / Tree SHAP fallbacks) to explain exactly why a candidate was classified as an exoplanet.
+- **Interactive Lab Dashboard**: A premium user interface featuring drag-and-drop CSV batch upload, real-time predictions, visual feedback, and user authentication.
+- **Docker Orchestrated**: Simple, single-command container deployment for the entire stack.
 
-```bash
-cd ml/src
-python fetch_nasa.py                    # all datasets
-python fetch_nasa.py --dataset kepler   # single dataset
+---
+
+## 📊 Model Performance
+
+The platform ships with a Random Forest classifier trained on the NASA Kepler cumulative object dataset. Features are automatically aligned, imputed, and scaled using `StandardScaler` to ensure robust inference.
+
+### 📈 Evaluation Metrics
+Evaluated on a stratified 20% test split:
+
+| Metric | Score |
+| :--- | :--- |
+| **Accuracy** | 98.54% |
+| **Precision** | 99.25% |
+| **Recall** | 97.78% |
+| **F1-Score** | 98.51% |
+| **ROC AUC** | 0.9993 |
+
+The confusion matrix and feature importances are automatically generated and saved under `ml/results/` for transparency and auditability.
+
+---
+
+## 📁 Repository Structure
+
+```text
+novasight/
+├── backend/                  # FastAPI Application
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── auth.py       # JWT session auth (in-memory user db)
+│   │   │   └── predict.py    # Single and batch prediction endpoints
+│   │   ├── auth.py           # User creation, password hashing, and token verification
+│   │   ├── model_loader.py   # Loader with scaler integration & features mapping
+│   │   └── main.py           # FastAPI entry point & CORS configuration
+│   └── Dockerfile            # Multi-stage slim Python container
+├── frontend/                 # React/Next.js Application
+│   ├── components/           # Space background, interactive Lab, and Auth UI
+│   ├── pages/                # Main dashboard page
+│   ├── next.config.js        # API dev proxy rewrite configuration
+│   └── Dockerfile            # Optimized Alpine-based Node container
+├── ml/                       # Machine Learning Pipeline
+│   ├── data/raw/             # Downloaded Kepler KOI datasets
+│   ├── models/               # Saved model.pkl, scaler.pkl, and configs
+│   ├── results/              # Confusion matrix plots and metrics JSON
+│   └── src/
+│       ├── fetch_nasa.py     # Data fetcher from NASA TAP URL
+│       ├── train.py          # Model training, scaling, & config generation script
+│       ├── evaluate.py       # Metrics calculator & Confusion Matrix plotter
+│       └── explain.py        # Explainability & feature importance utilities
+├── docs/                     # Detailed guides and developer docs
+│   ├── api-docs.md           # API specification and curl examples
+│   ├── development.md        # Local workspace setup guide
+│   └── docker-guide.md       # Docker and container orchestration manual
+├── docker-compose.yml        # Development environment docker configuration
+└── README.md                 # Project root documentation
 ```
 
 ---
 
-## 🚀 Quick-Start (Local Dev)
+## 🚀 Quick Start (Local Development)
 
-### 1. Backend (FastAPI)
+### Prerequisites
+- Python 3.10+
+- Node.js 18+
+- npm
+
+### 1. Set Up the Machine Learning Pipeline
+
+```bash
+# Clone the repository
+git clone https://github.com/MosadCreates/novasight.git
+cd novasight
+
+# Set up virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install ML dependencies
+pip install -r ml/requirements.txt
+
+# 1. Fetch Kepler KOI cumulative dataset
+python ml/src/fetch_nasa.py --dataset kepler_koi
+
+# 2. Train the Random Forest Model
+python ml/src/train.py ml/data/raw/kepler_koi_20260613.csv --label-column koi_disposition --output ml/models/model.pkl
+
+# 3. Verify Model Evaluation
+python ml/src/evaluate.py
+```
+
+### 2. Start the Backend API
 
 ```bash
 cd backend
-python -m venv venv && source venv/bin/activate   # win: venv\Scripts\activate
+# Install dependencies
 pip install -r requirements.txt -r requirements-dev.txt
-uvicorn app.main:app --reload            # http://localhost:8000/docs
-```
 
-### 2. Machine-Learning Pipeline
+# Start FastAPI server
+uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+- API Health Endpoint: http://localhost:8000/health
+- Swagger API docs: http://localhost:8000/docs
+
+### 3. Start the Frontend Dashboard
 
 ```bash
-cd ml
-pip install -r requirements.txt -r requirements-dev.txt
-# Train baseline model
-python src/train.py data/raw/kepler_20241007.csv --model random_forest --output models/rf.pkl
-# Explain a prediction
-python src/explain.py
-```
-
-### 3. Frontend (Next.js)
-
-```bash
-cd frontend
+cd ../frontend
+# Install npm dependencies
 npm install
-npm run dev                              # http://localhost:3000
-```
 
-> **Docker**: run the whole stack with `docker-compose up`.
+# Run the Next.js dev server
+npm run dev
+```
+- Frontend application: http://localhost:3000
 
 ---
 
-## 📁 Folder Layout
+## 🐳 Running with Docker Compose
 
-```
-SpaceApps/
-├── backend/         FastAPI service + Dockerfile
-├── frontend/        Next.js UI + Dockerfile
-├── ml/              Data, models, training, explainability
-│   ├── data/        raw/   processed/
-│   ├── src/         train.py fetch_nasa.py …
-│   └── mlruns/      MLflow tracking artifacts
-├── .github/         CI (GitHub Actions) & docs
-└── docker-compose.yml  Dev stack (backend + frontend + redis)
-```
-
----
-
-## 🔧 How to Use the API
-
-1. Start backend (`uvicorn` or `docker-compose`).
-2. Send light-curve features to `/predict`.
+To start the entire environment (FastAPI backend, Next.js frontend, and Redis caching server) with a single command:
 
 ```bash
-curl -X POST http://localhost:8000/predict \
-     -H "Content-Type: application/json" \
-     -d '{
-           "orbital_period": 10.5,
-           "transit_duration": 2.5,
-           "planet_radius": 1.2,
-           "stellar_temp": 5778,
-           "flux": [1.01,0.99,1.02,0.98,...]
-         }'
+# From the project root
+docker-compose up --build
 ```
 
-Response
-
-```json
-{
-  "prediction": 1,
-  "confidence": 0.93,
-  "top_features": [
-    { "name": "stellar_temp", "impact": 0.15 },
-    { "name": "planet_radius", "impact": -0.08 },
-    { "name": "orbital_period", "impact": 0.05 }
-  ]
-}
-```
+### Port Mappings
+- **Frontend App**: http://localhost:3000
+- **FastAPI Server**: http://localhost:8000
+- **API Docs (Swagger)**: http://localhost:8000/docs
+- **Redis Server**: `localhost:6379`
 
 ---
 
-## 🛠️ Development Notes
+## 🔒 Authentication Notes
+The backend supports user registration and login using JWT session tokens. 
+- For demonstration simplicity in this portfolio prototype, users are stored in an **in-memory database** dictionary in `backend/app/auth.py`. 
+- **Planned Work**: Persistence utilizing SQLite or PostgreSQL is listed in the future roadmap.
 
-- **MLflow** tracking: `mlflow ui --backend-store-uri ./ml/mlruns`.
-- **CI**: GitHub Actions – lint, tests, build.
-- **Docker**: production-ready images (`backend/Dockerfile`, `frontend/Dockerfile`).
-- **Data fetcher**: `ml/src/fetch_nasa.py` automates downloads.
+---
+
+## 🗺️ Roadmap & Future Work
+- [ ] **Database Integration**: Transition the session auth database from in-memory to PostgreSQL/SQLite.
+- [ ] **Raw Light-Curve Time-Series**: Train 1D CNNs or LSTMs to classify raw time-series flux signals rather than tabular pre-extracted Kepler attributes.
+- [ ] **Multi-Class Classification**: Extend the model to explicitly separate *Candidates* from *Confirmed* exoplanets, rather than grouping them into a binary (Positive vs False Positive) target.
 
 ---
 
 ## 🤝 Contributing
 
+Contributions are welcome! Please feel free to open a Pull Request or report issues. 
+
 1. Fork & clone repository.
-2. Create feature branch `git checkout -b feature/xyz`.
-3. Follow code style: `black`, `flake8`, `eslint`.
-4. Add/ update tests (`pytest`, `jest`).
-5. Commit using conventional commits: `feat(scope): message`.
-6. Push & open Pull Request; ensure CI passes.
-
-See [`CONTRIBUTING.md`](CONTRIBUTING.md) for full guidelines.
+2. Create a feature branch (`git checkout -b feature/amazing-feature`).
+3. Format with `black` and `flake8`.
+4. Submit a Pull Request.
 
 ---
 
-## Project Structure
+## 📜 License
+This project is licensed under the MIT License.
 
-```
-.
-├── backend/          # FastAPI backend
-├── ml/              # Machine learning pipeline
-└── frontend/        # Next.js frontend
-```
-
-## Getting Started
-
-### Backend (FastAPI)
-
-```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload
-```
-
-The API will be available at `http://localhost:8000`
-
-**API Endpoints:**
-
-- `GET /` - Root endpoint
-- `GET /health` - Health check
-- `POST /api/predict` - Single prediction (JSON with feature dict)
-- `POST /api/predict/batch` - Batch predictions from CSV upload
-- `GET /api/model/info` - Get loaded model information
-
-**Response Format:**
-
-```json
-{
-  "prediction": "confirmed|candidate|false_positive",
-  "confidence": 0.87,
-  "explain": {
-    "top_features": [{ "name": "orbital_period", "value": 0.8 }]
-  }
-}
-```
-
-**Docker:**
-
-```bash
-cd backend
-docker build -t novasight-api .
-docker run -p 8000:8000 novasight-api
-```
-
-### ML Pipeline
-
-```bash
-cd ml
-pip install -r requirements.txt
-```
-
-**Training a model:**
-
-```bash
-cd ml/src
-python train.py
-```
-
-**Evaluating a model:**
-
-```bash
-cd ml/src
-python evaluate.py
-```
-
-**Exploration notebook:**
-
-```bash
-cd ml
-jupyter notebook notebooks/0_exploration.ipynb
-```
-
-### Frontend (Next.js)
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-The frontend will be available at `http://localhost:3000`
-
-**Production build:**
-
-```bash
-npm run build
-npm start
-```
-
-## Data Sources
-
-### Kepler/K2/TESS Datasets
-
-- **Kepler**: https://www.kaggle.com/datasets/keplersmachines/kepler-labelled-time-series-data
-- **NASA Exoplanet Archive**: https://exoplanetarchive.ipac.caltech.edu/
-- **MAST Portal**: https://mast.stsci.edu/
-
-## Model Architecture Ideas
-
-### Option 1: 1D CNN
-
-- Good for detecting local patterns in light curves
-- Fast training and inference
-- Works well with raw flux data
-
-### Option 2: LSTM/GRU
-
-- Captures temporal dependencies
-- Effective for sequence data
-- Can model long-range patterns
-
-### Option 3: Transformer
-
-- Attention mechanism for important features
-- State-of-the-art for time series
-- Requires more data and compute
-
-### Option 4: Hybrid
-
-- Combine CNN for feature extraction + LSTM for temporal modeling
-- Best of both worlds
-
-## Features to Consider
-
-### Time-Domain Features
-
-- Transit depth
-- Transit duration
-- Period
-- Mean, std, skewness, kurtosis
-- Min/max flux values
-
-### Frequency-Domain Features
-
-- Fourier transform coefficients
-- Power spectral density
-- Dominant frequencies
-
-### Statistical Features
-
-- Autocorrelation
-- Moving averages
-- Trend components
-
-## Performance Metrics
-
-Given the class imbalance (few exoplanets vs many non-exoplanets):
-
-- **Precision**: Important to avoid false positives
-- **Recall**: Don't miss actual exoplanets
-- **F1-Score**: Balance of both
-- **ROC-AUC**: Overall model performance
-- **Confusion Matrix**: Detailed breakdown
-
-## Resources
-
-- [Kepler Mission](https://www.nasa.gov/mission_pages/kepler/main/index.html)
-- [TESS Mission](https://www.nasa.gov/tess-transiting-exoplanet-survey-satellite)
-- [Exoplanet Detection Papers](https://arxiv.org/search/?query=exoplanet+detection+machine+learning)
-
-## License
-
-MIT
-
-## Contributing
-
-Contributions welcome! Please open an issue or submit a pull request.
-
----
-
-## Author
-
-Created and built by Mohamed Mosad.
+## ✍️ Author
+Created and maintained by [Mohamed Mosad](https://github.com/MosadCreates). Built with passion for astronomy and data science.

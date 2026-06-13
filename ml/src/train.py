@@ -548,8 +548,8 @@ Examples:
     # Step 2: Preprocess features
     logger.info("Step 2: Preprocessing features...")
     extract_flux = not args.no_flux_features
-    X, y = preprocess_features(
-        df, label_column=args.label_column, extract_flux_features=extract_flux
+    X, y, scaler, feature_names = preprocess_features(
+        df, label_column=args.label_column, extract_flux_features=extract_flux, return_scaler=True
     )
     logger.info(f"Feature matrix shape: {X.shape}")
     logger.info(f"Class distribution: {np.bincount(y.astype(int))}")
@@ -633,6 +633,22 @@ Examples:
     # Step 6: Save model
     logger.info("Step 5: Saving model...")
     save_model(model, args.output, args.model)
+
+    # Save scaler
+    scaler_path = str(Path(args.output).parent / "scaler.pkl")
+    with open(scaler_path, "wb") as f:
+        pickle.dump(scaler, f)
+    logger.info(f"Scaler saved to: {scaler_path}")
+
+    # Save model config (expected by model loader)
+    config_path = str(Path(args.output).parent / "model_config.json")
+    with open(config_path, "w") as f:
+        json.dump({
+            "feature_names": feature_names,
+            "model_type": args.model,
+            "trained_at": datetime.now().isoformat()
+        }, f, indent=2)
+    logger.info(f"Model config saved to: {config_path}")
 
     # Step 7: Save metrics
     metrics_path = str(Path(args.output).parent / "metrics.json")

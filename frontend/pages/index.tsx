@@ -43,8 +43,17 @@ export default function HomePage() {
         throw new Error(`Server responded with ${response.status}`);
       }
 
-      const data: PredictionResponse = await response.json();
-      setResult(data);
+      const data = await response.json();
+      
+      if (data.predictions && data.predictions.length > 0) {
+        // Map the first prediction of the batch to the single-result UI
+        setResult({
+          prediction: data.predictions[0].prediction,
+          confidence: data.predictions[0].confidence
+        });
+      } else {
+        setResult(data);
+      }
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'Unexpected error');

@@ -93,6 +93,23 @@ def load_exoplanet_csv(path: str) -> pd.DataFrame:
         "flux": ["flux", "light_curve", "lc", "flux_values", "timeseries"],
     }
 
+    # Check if flux or its aliases are present in the columns
+    flux_present = False
+    for alias in required_columns["flux"]:
+        if alias in df.columns:
+            flux_present = True
+            break
+    if not flux_present:
+        for col in df.columns:
+            if any(alias in col for alias in required_columns["flux"]):
+                flux_present = True
+                break
+
+    if not flux_present:
+        logger.warning("Optional column 'flux' not found. Skipping flux feature extraction.")
+        required_columns = required_columns.copy()
+        del required_columns["flux"]
+
     # Map existing columns to required columns
     column_mapping = {}
     for required, aliases in required_columns.items():

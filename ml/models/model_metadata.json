@@ -1,0 +1,12 @@
+{
+  "model_type": "random_forest",
+  "input_csv": "ml/data/raw/kepler_koi_20260613.csv",
+  "output_path": "ml/models/model.pkl",
+  "test_size": 0.2,
+  "random_state": 42,
+  "n_features": 43,
+  "n_train_samples": 7651,
+  "n_test_samples": 1913,
+  "flux_features_extracted": true,
+  "trained_at": "2026-06-13T22:41:13.790907"
+}

@@ -26,7 +26,9 @@ class BaseModelLoader(ABC):
         self.config_path = (
             Path(config_path) if config_path else self.model_path.parent / "model_config.json"
         )
+        self.scaler_path = self.model_path.parent / "scaler.pkl"
         self.model = None
+        self.scaler = None
         self.config = {}
         self.feature_names = []
 
@@ -74,6 +76,14 @@ class BaseModelLoader(ABC):
                 self.config = json.load(f)
                 self.feature_names = self.config.get("feature_names", [])
 
+        # Load scaler if it exists
+        if self.scaler_path.exists():
+            try:
+                with open(self.scaler_path, "rb") as f:
+                    self.scaler = pickle.load(f)
+            except Exception:
+                pass
+
     def map_prediction_to_class(self, prediction: int, confidence: float) -> PredictionClass:
         """
         Map numeric prediction to PredictionClass
@@ -103,18 +113,42 @@ class BaseModelLoader(ABC):
         Returns:
             Numpy array of features in correct order
         """
+        # Map aliases to normalized feature names (matching those created by load_exoplanet_csv)
+        aliases_map = {
+            "koi_period": "orbital_period", "period": "orbital_period", "pl_orbper": "orbital_period", "period_days": "orbital_period",
+            "koi_duration": "transit_duration", "duration": "transit_duration", "pl_trandur": "transit_duration", "transit_dur": "transit_duration",
+            "koi_prad": "planet_radius", "radius": "planet_radius", "pl_radj": "planet_radius", "pl_rade": "planet_radius", "prad": "planet_radius",
+            "koi_steff": "stellar_temp", "temperature": "stellar_temp", "st_teff": "stellar_temp", "teff": "stellar_temp", "star_temp": "stellar_temp"
+        }
+        normalized_features = {}
+        for k, v in feature_dict.items():
+            norm_k = aliases_map.get(k, k)
+            normalized_features[norm_k] = v
+
         if not self.feature_names:
             # If no feature names in config, use dictionary order
-            return np.array(list(feature_dict.values())).reshape(1, -1)
+            features_arr = np.array(list(normalized_features.values())).reshape(1, -1)
+        else:
+            # Ensure features are in the correct order
+            features = []
+            core_features = {"orbital_period", "transit_duration", "planet_radius", "stellar_temp"}
+            for name in self.feature_names:
+                if name not in normalized_features:
+                    if name in core_features:
+                        raise ValueError(f"Missing required core feature: {name}")
+                    normalized_features[name] = 0.0
+                features.append(normalized_features[name])
+            features_arr = np.array(features).reshape(1, -1)
 
-        # Ensure features are in the correct order
-        features = []
-        for name in self.feature_names:
-            if name not in feature_dict:
-                raise ValueError(f"Missing required feature: {name}")
-            features.append(feature_dict[name])
+        # Scale features if scaler is loaded
+        if self.scaler is not None:
+            # Silence user warnings about feature names (StandardScaler expects feature names if fitted on DataFrame, but we pass numpy array)
+            import warnings
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                features_arr = self.scaler.transform(features_arr)
 
-        return np.array(features).reshape(1, -1)
+        return features_arr
 
 
 class PyTorchModelLoader(BaseModelLoader):

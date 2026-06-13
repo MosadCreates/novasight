@@ -28,7 +28,9 @@ def preprocess_features(
     label_column: str = "label",
     extract_flux_features: bool = True,
     feature_columns: Optional[List[str]] = None,
-) -> Tuple[np.ndarray, np.ndarray]:
+    return_scaler: bool = False,
+    scaler: Optional[StandardScaler] = None,
+) -> Tuple[np.ndarray, np.ndarray] | Tuple[np.ndarray, np.ndarray, StandardScaler, List[str]]:
     """
     Preprocess features for exoplanet detection.
 
@@ -59,6 +61,16 @@ def preprocess_features(
     # Separate labels if present
     if label_column in df_processed.columns:
         y = df_processed[label_column].values
+        # Map string labels to numeric (confirmed/candidate = 1, false positive = 0)
+        if len(y) > 0 and (y.dtype == object or isinstance(y[0], str)):
+            y_mapped = []
+            for val in y:
+                val_str = str(val).upper()
+                if "CONFIRMED" in val_str or "CANDIDATE" in val_str:
+                    y_mapped.append(1)
+                else:
+                    y_mapped.append(0)
+            y = np.array(y_mapped, dtype=int)
         df_features = df_processed.drop(columns=[label_column])
         logger.info(f"Extracted labels: {len(y)} samples, {len(np.unique(y))} unique classes")
     else:
@@ -115,18 +127,31 @@ def preprocess_features(
     else:
         X_combined = X_numeric
 
+    # Fill remaining NaNs with 0 before scaling to prevent NaN standard deviation
+    X_combined = X_combined.fillna(0)
+
     # Scale all features using StandardScaler
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X_combined)
+    if scaler is None:
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X_combined)
+    else:
+        X_scaled = scaler.transform(X_combined)
 
     logger.info(f"Scaled features using StandardScaler: shape {X_scaled.shape}")
     logger.info(f"Feature statistics - Mean: {X_scaled.mean():.6f}, Std: {X_scaled.std():.6f}")
 
     # Return as numpy arrays
-    if y is not None:
-        return X_scaled, y
+    if return_scaler:
+        feature_names = X_combined.columns.tolist()
+        if y is not None:
+            return X_scaled, y, scaler, feature_names
+        else:
+            return X_scaled, np.array([]), scaler, feature_names
     else:
-        return X_scaled, np.array([])
+        if y is not None:
+            return X_scaled, y
+        else:
+            return X_scaled, np.array([])
 
 
 def _extract_flux_features(flux_series: pd.Series) -> pd.DataFrame:
